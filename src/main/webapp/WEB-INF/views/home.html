@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet"
+          th:href="@{/resources/css/messageDialog.css}" />
+</head>
+<body>
+    <div>
+        <button class="btn" th:unless="${hasDevice}" onclick="createDevice()">Tạo Device</button>
+        <div style="margin-bottom: 10px;" th:if="${hasDevice}">
+            <button class="btn" onclick="backup()">Sao lưu</button>
+            <input type="checkbox" id="deleteAllBeforeBackup">
+            <label for="deleteAllBeforeBackup"> Xoá các bản sao lưu cũ trước khi tạo bản sao lưu mới</label>
+        </div>
+        <div th:if="${hasBackup}">
+            <button class="btn" onclick="restore()">Phục hồi</button>
+            <label for="position">Bảng sao lưu thứ:</label>
+            <select id="position">
+                <option th:each="position: ${positions}"
+                        th:value="${position}"
+                        th:text="${position}"
+                        th:selected="${position} == ${firstPosition}"
+                > </option>
+            </select>
+            <input type="checkbox" id="restoreToATime" th:checked="${now} != null" onchange="changeRestoreToATime()">
+            <label for="restoreToATime">Phục hồi về một thời điểm được chọn</label>
+            <input type="datetime-local" id="restoreTime" th:value="${now}" th:style="'display:'+ (${now} != null ? 'inline' : 'none')">
+        </div>
+    </div>
+    <div>
+        <div id="databaseNames">
+            <!--        why it doesn't work-->
+            <!--        <h3 th:if="(${dbName} == ${param.databaseName})">h3</h3>-->
+            <h1>Các cơ sở dữ liệu</h1>
+            <select id="databaseName" size = 10 onchange="changeDatabase()">
+                <option th:each="database : ${databases}"
+                        th:selected="(${database.name} == ${dbName} or ${database.name} == ${firstDatabaseName})"
+                        th:value="${database.name}"
+                        th:text="${database.name}"
+
+                >db name</option>
+            </select>
+        </div>
+        <div id="backupInformations" th:if="${databaseName} != null">
+            <h1 th:text="|Tên cơ sở dữ liệu: ${databaseName}|">tên db</h1>
+            <table id="backupInformation">
+                <tr>
+                    <th>Bảng sao lưu thứ #</th>
+                    <th>Diễn giải</th>
+                    <th>Ngày giờ sao lưu</th>
+                    <th>User sao lưu</th>
+                </tr>
+                <tr th:each="backupInformation : ${backupInformations}">
+                    <td th:text="${backupInformation.position}">vi tri</td>
+                    <td th:text="${backupInformation.name}">dien giai</td>
+                    <td th:text="${backupInformation.backupFinishDate}">ngay</td>
+                    <td th:text="${backupInformation.userName}">user</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div id="messageDigalog" th:if="${message} != null">
+        <div class="modal">
+            <p th:text="${message}"></p>
+            <button class="btn" onclick="closeModalHandler()">Ok</button>
+        </div>
+        <div class="backdrop" onclick="closeModalHandler()"></div>
+    </div>
+
+    <script>
+        let databaseName = document.getElementById("databaseName").value;
+
+        function changeDatabase(){
+            databaseName = document.getElementById("databaseName").value;
+            window.location.href = "?databaseName=" + databaseName;
+        }
+
+        function changeRestoreToATime(){
+            if(document.getElementById("restoreToATime").checked){
+                window.location.href = "?databaseName=" + databaseName + "&showTime=true";
+            }else {
+                const restoreTime = document.getElementById("restoreTime");
+                restoreTime.style.display = "none";
+            }
+        }
+
+        function createDevice(){
+            window.location.href = "createDevice?databaseName=" + databaseName;
+        }
+
+        function backup(){
+            const deleteAllBeforeBackup = document.getElementById("deleteAllBeforeBackup").checked;
+            if(deleteAllBeforeBackup){
+                window.location.href = "backup?databaseName=" + databaseName + "&deleteAllBeforeBackup=true";
+            }else {
+                window.location.href = "backup?databaseName=" + databaseName + "&deleteAllBeforeBackup=false";
+            }
+        }
+
+        function restore(){
+            const restoreToATime = document.getElementById("restoreToATime").checked;
+            if(restoreToATime){
+                const restoreTime = document.getElementById("restoreTime").value;
+                window.location.href = "restore?databaseName=" + databaseName + "&time=" + restoreTime;
+            }else{
+                const position = document.getElementById("position").value;
+                window.location.href = "restore?databaseName=" + databaseName + "&position=" + position;
+            }
+        }
+
+        function closeModalHandler(){
+            document.getElementById("messageDigalog").remove();
+        }
+
+    </script>
+</body>
+</html>

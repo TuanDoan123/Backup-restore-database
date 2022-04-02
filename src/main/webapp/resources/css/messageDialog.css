@@ -1,0 +1,101 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 3rem;
+    background-color: #dfdfdf;
+}
+
+h1{
+    color: #333333;
+    text-align: center;
+}
+
+.btn {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 4px;
+    background-color: #800040;
+    color: white;
+    border: 1px solid #800040;
+    margin: 0 1rem;
+}
+
+.btn:hover {
+    background-color: #9c1458;
+    border-color: #9c1458;
+}
+
+.card {
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    width: 20rem;
+}
+
+#databaseNames{
+    float: left;
+    width: 25%;
+}
+
+#backupInformations{
+    float: left;
+    width: 75%;
+}
+
+#databaseName {
+    width: 100%;
+}
+
+#databaseName option{
+    padding: 10px;
+    font-size: 18px;
+}
+
+#backupInformation {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#backupInformation td, #backupInformation th {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#backupInformation tr:nth-child(even){background-color: #f2f2f2;}
+
+/*#backupInformation tr:hover {background-color: #ddd;}*/
+
+#backupInformation th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #04AA6D;
+    color: white;
+}
+
+.modal {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    border-radius: 6px;
+    background-color: white;
+    padding: 1rem;
+    text-align: center;
+    width: 30rem;
+    z-index: 10;
+    position: fixed;
+    top: 40vh;
+    left: calc(50% - 15rem);
+}
+
+.backdrop {
+    position: fixed;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.75);
+    width: 100%;
+    height: 100vh;
+    top: 0;
+    left: 0;
+}
