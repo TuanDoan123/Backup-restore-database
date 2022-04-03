@@ -110,17 +110,13 @@ public class HomeController{
 						  @RequestParam(required = false) String time) throws SQLException {
 		if(backupDAO.getConnect().getUserName() != null && backupDAO.getConnect().getPassword() != null){
 			if(time == null){
-				System.out.println("->>>>>> restoreTime == null");
 				backupDAO.restore(databaseName, position);
 			}else {
 				LocalDateTime restoreTime = LocalDateTime.parse(time);
-				System.out.println("->>>>>> restoreTime != null");
 				int foundPosition = backupDAO.findPositionToRestore(databaseName, restoreTime);
 				if(foundPosition != -1){
-					System.out.println("->>>> foundPosition != -1, " + foundPosition);
 					backupDAO.restore(databaseName, Timestamp.valueOf(restoreTime), foundPosition);
 				}else{
-					System.out.println("Failure");
 					return "redirect:/?databaseName=" + databaseName  + "&message=RESTOREFAILURE";
 				}
 			}

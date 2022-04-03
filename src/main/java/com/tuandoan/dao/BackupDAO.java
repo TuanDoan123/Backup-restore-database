@@ -25,44 +25,7 @@ public class BackupDAO {
         return connect;
     }
 
-    public void backup() throws SQLException {
-        Connection connection = connect.getConnection();
-        if(connection != null){
-            String[] arr = {"USE [master]",
-                    "CREATE DATABASE [SQLTestDB]",
-                    "USE [SQLTestDB]",
-                    "CREATE TABLE SQLTest " + "(" +
-                        "ID INT NOT NULL PRIMARY KEY," +
-                         "c1 VARCHAR(100) NOT NULL," +
-                        "dt1 DATETIME NOT NULL DEFAULT getdate()" +
-                      ");",
-                    "USE [SQLTestDB]",
-                    "INSERT INTO SQLTest (ID, c1) VALUES (1, 'test1') ",
-                    "INSERT INTO SQLTest (ID, c1) VALUES (2, 'test2') " ,
-                    "INSERT INTO SQLTest (ID, c1) VALUES (3, 'test3') ",
-                    "INSERT INTO SQLTest (ID, c1) VALUES (4, 'test4') " ,
-                    "INSERT INTO SQLTest (ID, c1) VALUES (5, 'test5')"};
-
-            Statement statement = connection.createStatement();
-//            for(String s: arr){
-//                statement.execute(s);
-//            }
-            String sql = "EXEC sp_addumpdevice 'disk', 'DEVICE_SHOP', 'D:\\Devices\\DEVICE_SHOP.bak'";
-            statement.execute(sql);
-//            ResultSet rs = statement.executeQuery(sql);
-//            while(rs.next()){
-//                System.out.println(rs.getString(1));
-//                System.out.println(rs.getInt(2));
-//                System.out.println("--------------------------");
-//            }
-            System.out.println("END");
-        }else{
-            System.out.println("Connect failed");
-        }
-    }
-
     public void createDevice(String databaseName) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -78,7 +41,6 @@ public class BackupDAO {
     }
 
     public void backup(String databaseName, boolean deleteAll) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -95,17 +57,14 @@ public class BackupDAO {
     }
 
     public void restore(String databaseName, int position) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "ALTER DATABASE " + databaseName + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE";
             Statement statement = connection.createStatement();
             statement.execute(stm1);
-            System.out.println("Finished 1");
 
             String stm2 = "USE tempdb";
             statement.execute(stm2);
-            System.out.println("Finished 2");
 
             String stm3 = "RESTORE DATABASE ? FROM  ?  WITH FILE= ?, REPLACE";
             String deviceName = "DEVICE_" + databaseName;
@@ -114,8 +73,6 @@ public class BackupDAO {
             preparedStatement.setString(2, deviceName);
             preparedStatement.setInt(3, position);
             preparedStatement.execute();
-            System.out.println("Finished 3");
-
 
             String stm4 = "ALTER DATABASE " + databaseName + " SET MULTI_USER";
             statement.execute(stm4);
@@ -125,13 +82,11 @@ public class BackupDAO {
     }
 
     public void restore(String databaseName, Timestamp restoreTime, int position) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "ALTER DATABASE " + databaseName + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE";
             Statement statement = connection.createStatement();
             statement.execute(stm1);
-            System.out.println("Finished 1");
 
             String stm2 = "BACKUP LOG ? TO DISK = ? WITH INIT";
             String path = "D:\\Devices\\" + databaseName + ".trn";
@@ -139,11 +94,9 @@ public class BackupDAO {
             preparedStatement.setString(1, databaseName);
             preparedStatement.setString(2, path);
             preparedStatement.execute();
-            System.out.println("Finished 2");
 
             String stm3 = "USE tempdb";
             statement.execute(stm3);
-            System.out.println("Finished 3");
 
             String stm4 = "RESTORE DATABASE ? FROM ? WITH FILE = ?, REPLACE, NORECOVERY ";
             String deviceName = "DEVICE_" + databaseName;
@@ -152,8 +105,6 @@ public class BackupDAO {
             preparedStatement.setString(2, deviceName);
             preparedStatement.setInt(3, position);
             preparedStatement.execute();
-            System.out.println("Finished 4");
-
 
             String stm5 = "RESTORE LOG ? FROM DISK = ? WITH STOPAT= ?";
             preparedStatement = connection.prepareStatement(stm5);
@@ -161,20 +112,15 @@ public class BackupDAO {
             preparedStatement.setString(2, path);
             preparedStatement.setTimestamp(3, restoreTime);
             preparedStatement.execute();
-            System.out.println("Finished 5");
 
             String stm6 = "ALTER DATABASE " + databaseName + " SET MULTI_USER";
             statement.execute(stm6);
-            System.out.println("Finished 6");
-
-            System.out.println("END");
         }else{
             System.out.println("Connect failed");
         }
     }
 
     public List<BackupInformation> getBackupInformations(String databaseName) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "SELECT position, name, backup_finish_date , user_name FROM  msdb.dbo.backupset " +
@@ -207,7 +153,6 @@ public class BackupDAO {
     }
 
     public List<Database> getDatabaseNames() throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "SELECT        name " +
@@ -229,7 +174,6 @@ public class BackupDAO {
     }
 
     public boolean hasDevice(String databaseName) throws SQLException {
-        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -257,16 +201,5 @@ public class BackupDAO {
             }
         }
         return -1;
-    }
-
-    public static void main(String[] args) throws SQLException {
-        //Backup.backup("SQLTestDB", false);
-//        LocalDateTime restoreTime = LocalDateTime.of(LocalDate.of(2022, 3, 28), LocalTime.of(11, 15));
-//        BackupDAO.restore("SQLTestDB", Timestamp.valueOf(restoreTime));
-        /*List< DatabaseName>  databaseNames = BackupDAO.getDatabaseNames();
-        for( DatabaseName  databaseName :  databaseNames){
-            System.out.println( databaseName);
-        }*/
-        //System.out.println(BackupDAO.hasDevice("sqltestdb"));
     }
 }
