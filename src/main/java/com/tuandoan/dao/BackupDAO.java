@@ -3,6 +3,7 @@ package com.tuandoan.dao;
 import com.tuandoan.jdbc.Connect;
 import com.tuandoan.model.BackupInformation;
 import com.tuandoan.model.Database;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.*;
@@ -13,11 +14,18 @@ import java.util.List;
 
 @Repository
 public class BackupDAO {
+    private Connect connect;
+
+    @Autowired
+    public BackupDAO(Connect connect){
+        this.connect = connect;
+    }
+
+    public Connect getConnect() {
+        return connect;
+    }
 
     public void backup() throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
         Connection connection = connect.getConnection();
         if(connection != null){
             String[] arr = {"USE [master]",
@@ -54,9 +62,7 @@ public class BackupDAO {
     }
 
     public void createDevice(String databaseName) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -72,9 +78,7 @@ public class BackupDAO {
     }
 
     public void backup(String databaseName, boolean deleteAll) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -91,9 +95,7 @@ public class BackupDAO {
     }
 
     public void restore(String databaseName, int position) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "ALTER DATABASE " + databaseName + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE";
@@ -123,9 +125,7 @@ public class BackupDAO {
     }
 
     public void restore(String databaseName, Timestamp restoreTime, int position) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "ALTER DATABASE " + databaseName + " SET SINGLE_USER WITH ROLLBACK IMMEDIATE";
@@ -174,9 +174,7 @@ public class BackupDAO {
     }
 
     public List<BackupInformation> getBackupInformations(String databaseName) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "SELECT position, name, backup_finish_date , user_name FROM  msdb.dbo.backupset " +
@@ -209,9 +207,7 @@ public class BackupDAO {
     }
 
     public List<Database> getDatabaseNames() throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String stm1 = "SELECT        name " +
@@ -233,9 +229,7 @@ public class BackupDAO {
     }
 
     public boolean hasDevice(String databaseName) throws SQLException {
-        Connect connect = new Connect();
-        connect.setUserName("sa");
-        connect.setPassword("sa");
+        
         Connection connection = connect.getConnection();
         if(connection != null){
             String deviceName = "DEVICE_" + databaseName;
@@ -256,8 +250,7 @@ public class BackupDAO {
     }
 
     public int findPositionToRestore(String databaseName, LocalDateTime restoreTime) throws SQLException {
-        BackupDAO backupDAO = new BackupDAO();
-        List<BackupInformation> backupInformations = backupDAO.getBackupInformations(databaseName);
+        List<BackupInformation> backupInformations = getBackupInformations(databaseName);
         for(BackupInformation backupInformation : backupInformations){
             if(restoreTime.isAfter(backupInformation.getBackupFinishDate())){
                 return backupInformation.getPosition();

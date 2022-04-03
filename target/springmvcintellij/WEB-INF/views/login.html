@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet"
+          th:href="@{/resources/css/login.css}" />
+</head>
+<body>
+    <form action="/login" method="post">
+        <div class="con">
+            <h2>Đăng nhập</h2>
+            <div class="field-set">
+                <!--   user name Input-->
+                <input name="userName" class="form-input" placeholder="Tên đăng nhập" required type="text">
+                <!--   Password Input-->
+                <input name="password" class="form-input" placeholder="Mật khẩu" required type="password">
+
+                <div id="err" th:if="${err}" th:text="${err}"></div>
+                <!--      button LogIn -->
+                <button type="submit" class="log-in">Đăng nhập</button>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

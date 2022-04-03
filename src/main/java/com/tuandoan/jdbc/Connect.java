@@ -1,7 +1,10 @@
 package com.tuandoan.jdbc;
 
+import org.springframework.stereotype.Component;
+
 import java.sql.*;
 
+@Component
 public class Connect {
     private Connection con;
     private final String url = "jdbc:sqlserver://";
@@ -24,7 +27,7 @@ public class Connect {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             con = DriverManager.getConnection(getConnectionUrl(), userName, password);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("User name or password not correct");
         }
         return con;
     }
@@ -69,8 +72,16 @@ public class Connect {
         }
     }
 
+    public String getUserName() {
+        return userName;
+    }
+
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setPassword(String password) {
